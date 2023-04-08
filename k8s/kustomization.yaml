@@ -1,0 +1,8 @@
+namespace: postgres-mongo
+
+resources:
+  - ./mongodb.yaml
+  - ./postgres.yaml
+
+bases:
+  - bases/mongodb-rbac

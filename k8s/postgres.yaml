@@ -1,0 +1,50 @@
+apiVersion: postgres-operator.crunchydata.com/v1beta1
+kind: PostgresCluster
+metadata:
+  name: hippo
+spec:
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-14.6-2
+  postgresVersion: 14
+  instances:
+    - name: instance1
+      replicas: 1
+      dataVolumeClaimSpec:
+        accessModes:
+        - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 1Gi
+      resources:
+        requests:
+          cpu: 1000m
+          memory: 1Gi
+        limits:
+          cpu: 2000m
+          memory: 2Gi
+  userInterface:
+    pgAdmin:
+      dataVolumeClaimSpec:
+        accessModes:
+        - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: 1Gi
+      replicas: 1
+  backups:
+    pgbackrest:
+      image: registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:ubi8-2.41-2
+      repos:
+      - name: repo1
+        volume:
+          volumeClaimSpec:
+            accessModes:
+            - "ReadWriteOnce"
+            resources:
+              requests:
+                storage: 1Gi
+  patroni:
+    dynamicConfiguration:
+      postgresql:
+        pg_hba:
+          # TODO: find a more secure way to do this
+          - "host all all 0.0.0.0/0 md5"

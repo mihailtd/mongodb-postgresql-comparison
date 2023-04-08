@@ -1,0 +1,61 @@
+---
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: example-mongodb
+spec:
+  members: 1
+  type: ReplicaSet
+  version: "4.2.6"
+  security:
+    authentication:
+      modes: ["SCRAM"]
+  users:
+    - name: admin
+      db: admin
+      passwordSecretRef: # a reference to the secret that will be used to generate the user's password
+        name: admin-password
+      roles:
+        - name: root
+          db: admin
+        - name: clusterAdmin
+          db: admin
+        - name: userAdminAnyDatabase
+          db: admin
+      scramCredentialsSecretName: my-scram
+  statefulSet:
+    spec:
+      template:
+        spec:
+          # resources can be specified by applying an override
+          # per container name.
+          containers:
+            - name: mongod
+              resources:
+                requests:
+                  cpu: 1000m
+                  memory: 1Gi
+                limits:
+                  cpu: 2000m
+                  memory: 2Gi
+            - name: mongodb-agent
+              resources:
+                requests:
+                  cpu: 200m
+                  memory: 200Mi
+                limits:
+                  cpu: 200m
+                  memory: 250Mi
+  additionalMongodConfig:
+    storage.wiredTiger.engineConfig.journalCompressor: zlib
+
+# the user credentials will be generated from this secret
+# once the credentials are generated, this secret is no longer required
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: admin-password
+type: Opaque
+stringData:
+  password: pass1234
