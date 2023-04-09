@@ -41,21 +41,18 @@ const generateBatches = function* (numberOfBatches: number, batchSize: number) {
   }
 };
 
-const batches = generateBatches(10000, 1000);
+const batches = generateBatches(100, 1000);
 
 await client.connect();
 const db = client.db("subscriptions");
 const subscriptions = db.collection("subscriptions");
+await subscriptions.drop();
 
 try {
   await subscriptions.createIndex({ name: 1 }, { name: "name_1" });
 } catch (error) {
   console.log(error);
 }
-
-console.time("remove");
-await subscriptions.deleteMany({});
-console.timeEnd("remove");
 
 // Seed the database with subscriptions
 const seed = async () => {

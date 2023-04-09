@@ -91,7 +91,7 @@ try {
   console.log(error);
 }
 
-const sql = postgres("postgresql://hippo:zJkZvu+%2FAw4%5BhjV8pJ=I=W=f@localhost:5432/hippo");
+const sql = postgres("postgresql://hippo:df+hrKlKgQ@=t*eB{](k[fi0@localhost:5432/hippo");
 
 await sql`CREATE TABLE IF NOT EXISTS articles (
   id SERIAL PRIMARY KEY,

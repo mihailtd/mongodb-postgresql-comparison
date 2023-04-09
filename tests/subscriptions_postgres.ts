@@ -19,7 +19,7 @@ const generateSubscription = (): Subscription => {
   };
 };
 
-const sql = postgres("postgresql://hippo:zJkZvu+%2FAw4%5BhjV8pJ=I=W=f@localhost:5432/hippo");
+const sql = postgres("postgresql://hippo:df+hrKlKgQ@=t*eB{](k[fi0@localhost:5432/hippo");
 
 const generateBatches = function* (numberOfBatches: number, batchSize: number) {
   let batch: Subscription[] = [];
@@ -32,7 +32,7 @@ const generateBatches = function* (numberOfBatches: number, batchSize: number) {
   }
 };
 
-const batches = generateBatches(10000, 1000);
+const batches = generateBatches(100, 1000);
 
 await sql`CREATE TABLE IF NOT EXISTS subscriptions (
   id SERIAL PRIMARY KEY,
@@ -43,9 +43,7 @@ await sql`CREATE TABLE IF NOT EXISTS subscriptions (
   "subscribedAt" TIMESTAMP
 )`;
 
-console.time("remove");
 await sql`TRUNCATE TABLE subscriptions`;
-console.timeEnd("remove");
 
 await sql`DROP INDEX IF EXISTS name_index`;
 await sql`CREATE INDEX name_index ON subscriptions (name)`;
