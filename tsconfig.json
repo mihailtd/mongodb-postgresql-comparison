@@ -5,5 +5,9 @@
     "moduleResolution": "node",
     "module": "ES2022",
     "target": "ES2022"
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
   }
 }
