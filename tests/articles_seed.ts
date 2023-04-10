@@ -24,12 +24,12 @@ type Article = {
 };
 
 const getNumberOfSections = (): number => {
-  return Math.floor(Math.random() * 5) + 1;
+  return Math.floor(Math.random() * 3) + 1;
 };
 
 const generateArticle = (): Article => {
   return {
-    title: faker.lorem.sentence(),
+    title: `${faker.commerce.productName()} for ${faker.commerce.department()}`,
     author: {
       authorId: faker.datatype.uuid(),
       email: faker.internet.email(),
@@ -43,8 +43,8 @@ const generateArticle = (): Article => {
       .fill(null)
       .map(() => {
         return {
-          title: faker.lorem.sentence(),
-          content: faker.lorem.paragraphs()
+          title: `${faker.commerce.productAdjective()} ${faker.commerce.productAdjective()} ${faker.commerce.productName()} by  ${faker.company.name()}`,
+          content: faker.commerce.productDescription()
         };
       })
   };
@@ -77,15 +77,14 @@ const client = new MongoClient("mongodb://localhost:27017", {
 await client.connect();
 const db = client.db("articles");
 const articles = db.collection("articles");
-await articles.deleteMany({});
+await articles.drop();
 
 try {
   await articles.createIndex({ "author.firstName": 1 }, { name: "author_first_name_1" });
   await articles.createIndex({ status: 1 }, { name: "status_1" });
   await articles.createIndex([{ "sections.title": "text" }, { "sections.content": "text" }], {
     name: "text_index",
-    default_language: "english",
-    weights: { "sections.title": 10, "sections.content": 1 }
+    default_language: "english"
   });
 } catch (error) {
   console.log(error);
@@ -111,7 +110,7 @@ await sql`CREATE INDEX author_first_name_1 ON articles ((author->>'firstName'))`
 await sql`DROP INDEX IF EXISTS status_1`;
 await sql`CREATE INDEX status_1 ON articles (status)`;
 await sql`DROP INDEX IF EXISTS text_index`;
-await sql`CREATE INDEX text_index ON articles USING GIN (sections)`;
+await sql`CREATE INDEX text_index ON articles USING GIN ( to_tsvector('english', sections) )`;
 
 for (const batch of batches) {
   await articles.insertMany(batch);
