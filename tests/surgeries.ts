@@ -55,14 +55,14 @@ const client = new MongoClient("mongodb://localhost:27017", {
 
 await client.connect();
 const db = client.db("appointments");
-db.dropCollection("patients");
-db.dropCollection("locations");
-db.dropCollection("hospital_staff");
-db.dropCollection("surgeries");
 const patientsCollection = db.collection("patients");
 const locationsCollection = db.collection("locations");
 const hospitalStaffCollection = db.collection("hospital_staff");
 const surgeriesCollection = db.collection("surgeries");
+patientsCollection.drop();
+locationsCollection.drop();
+hospitalStaffCollection.drop();
+surgeriesCollection.drop();
 
 try {
   // create indexes
@@ -72,6 +72,8 @@ try {
   await hospitalStaffCollection.createIndex({ staff_id: 1 }, { unique: true });
   await surgeriesCollection.createIndex({ surgery_id: 1 }, { unique: true });
   await surgeriesCollection.createIndex({ room_id: 1 }, { unique: false });
+  await surgeriesCollection.createIndex({ patient_id: 1 }, { unique: false });
+  await surgeriesCollection.createIndex({ "staff.staff_id": 1 }, { unique: false });
 } catch (error) {
   console.log(error);
 }
